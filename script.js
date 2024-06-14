@@ -35,7 +35,9 @@ const questions = [
     "À quelle date et à quelle heure est prévue l'arrivée pour le trajet aller ?",
     "Quelle est l'adresse d'arrivée pour le trajet aller ?",
     "Pour le départ retour, à quelle date et à quelle heure est prévu le départ ?",
-    "À quelle date et à quelle heure est prévue l'arrivée pour le trajet retour ?"
+    "Quelle est l'adresse de départ pour le trajet retour ?",
+    "À quelle date et à quelle heure est prévue l'arrivée pour le trajet retour ?",
+    "Quelle est l'adresse d'arrivée pour le trajet retour ?"
 ];
 
 function displayMessage(message, sender = 'bot', buttons = []) {
@@ -64,10 +66,8 @@ function displayMessage(message, sender = 'bot', buttons = []) {
 }
 
 function scrollToBottom() {
-    window.scrollTo({
-        top: document.body.scrollHeight,
-        behavior: 'smooth'
-    });
+    const messagesContainer = document.getElementById('chatbot-messages');
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 
 function hideInputAndButton() {
@@ -83,6 +83,12 @@ function displayDateTimeInput() {
     const userInput = document.getElementById('user-input');
     userInput.type = 'datetime-local';
     userInput.value = ''; // Réinitialiser la valeur de l'entrée de date/heure
+}
+
+function displayTextInput() {
+    const userInput = document.getElementById('user-input');
+    userInput.type = 'text';
+    userInput.value = '';
 }
 
 function displayAddressInput() {
@@ -184,9 +190,14 @@ function nextStep(userResponse) {
                 formData.heure_depart_retour = heure_depart_retour;
                 break;
             case 12:
+                formData.adresse_depart_retour = userResponse;
+                break;
+            case 13:
                 const [date_arrivee_retour, heure_arrivee_retour] = userResponse.split('T');
                 formData.date_arrivee_retour = date_arrivee_retour;
                 formData.heure_arrivee_retour = heure_arrivee_retour;
+                break;
+            case 14:
                 formData.adresse_arrivee_retour = userResponse;
                 break;
         }
@@ -195,14 +206,15 @@ function nextStep(userResponse) {
     if (step < questions.length) {
         if (step === 0) {
             displayMessage(questions[step], 'bot', ['M.', 'Mme', 'Mlle']);
-        } else if (step === 7 || step === 9 || step === 11 || step === 13) {
+        } else if ([7, 9, 11, 13].includes(step)) {
             displayMessage(questions[step]);
             displayDateTimeInput();
-        } else if (step === 8 || step === 10 || step === 12) {
+        } else if ([8, 10, 12, 14].includes(step)) {
             displayMessage(questions[step]);
             displayAddressInput();
         } else {
             displayMessage(questions[step]);
+            displayTextInput();
         }
         step++;
     } else {
