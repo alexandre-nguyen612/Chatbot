@@ -1,56 +1,103 @@
 /* styles.css */
+
+/* Import de la police Poppins depuis Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+/* Définition des variables pour la charte graphique */
+:root {
+    --primary-color: #4834D4; /* Couleur principale */
+    --primary-hover-color: #372bb3; /* Couleur au survol */
+    --bot-message-bg: #4834D4; /* Couleur de fond pour les messages du robot */
+    --user-message-bg: #d1e7dd; /* Couleur de fond pour les messages de l'utilisateur */
+    --border-radius: 8px; /* Rayon de la bordure */
+    --box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Ombre de la boîte */
+    --input-padding: 10px; /* Rembourrage de l'entrée */
+    --transition-duration: 0.3s; /* Durée de transition */
+}
+
+/* Styles généraux pour le corps du chatbot */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f8f9fa; /* Couleur de fond globale */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
 #chatbot {
+    width: 100%;
     max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    background: #fff; /* Couleur de fond du chatbot */
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
+/* Styles pour la zone des messages du chatbot */
 #chatbot-messages {
-    max-height: 400px;
+    flex: 1;
+    padding: 20px;
     overflow-y: auto;
-    margin-bottom: 10px;
+    background-color: #f1f1f1; /* Couleur de fond des messages */
 }
 
+/* Styles pour les messages du bot et de l'utilisateur */
 .bot-message, .user-message {
-    padding: 10px;
-    margin-bottom: 5px;
+    padding: var(--input-padding);
+    margin-bottom: 10px;
     border-radius: 5px;
+    max-width: 80%;
+    word-wrap: break-word;
+    display: flex;
+    align-items: center;
+    transition: background-color var(--transition-duration);
 }
 
 .bot-message {
-    background-color: #e9e9e9;
-    text-align: left;
+    background-color: var(--bot-message-bg); /* Couleur de fond du message du robot */
+    align-self: flex-start;
+    color: #fff; /* Couleur du texte */
 }
 
 .user-message {
-    background-color: #d1e7dd;
+    background-color: var(--user-message-bg); /* Couleur de fond du message de l'utilisateur */
+    align-self: flex-end;
     text-align: right;
+    color: #000; /* Couleur du texte */
 }
 
+/* Styles pour la zone de saisie de texte et le bouton d'envoi */
 #chatbot-input {
     display: flex;
+    border-top: 1px solid #ccc;
+    padding: 10px;
+    background-color: #fff; /* Couleur de fond de la zone de saisie */
 }
 
 #chatbot-input input {
     flex: 1;
-    padding: 10px;
+    padding: var(--input-padding);
     border: 1px solid #ccc;
-    border-radius: 5px;
+    border-radius: var(--border-radius);
+    font-size: 16px;
 }
 
 #chatbot-input button {
-    padding: 10px 20px;
+    padding: var(--input-padding) 20px;
     margin-left: 10px;
     border: none;
-    background-color: #007bff;
-    color: white;
-    border-radius: 5px;
+    background-color: var(--primary-color); /* Couleur de fond du bouton */
+    color: white; /* Couleur du texte */
+    border-radius: var(--border-radius);
     cursor: pointer;
+    font-size: 16px;
+    transition: background-color var(--transition-duration);
 }
 
 #chatbot-input button:hover {
-    background-color: #0056b3;
+    background-color: var(--primary-hover-color); /* Couleur de fond du bouton au survol */
 }
