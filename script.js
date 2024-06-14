@@ -51,76 +51,78 @@ function displayMessage(message, sender = 'bot', buttons = []) {
         buttons.forEach(buttonText => {
             const buttonElement = document.createElement('button');
             buttonElement.textContent = buttonText;
-            buttonElement.onclick = () => nextStep(buttonText);
+            buttonElement.onclick = () => {
+                nextStep(buttonText);
+                buttonElement.disabled = true; // Désactiver le bouton après clic
+            };
             buttonsContainer.appendChild(buttonElement);
         });
         messagesContainer.appendChild(buttonsContainer);
     }
 
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+    if (step === questions.length) {
+        const userInput = document.getElementById('user-input');
+        userInput.style.display = 'none'; // Masquer la barre de texte à la dernière étape
+    }
 }
 
 function displayDateTimeInput() {
-    const messagesContainer = document.getElementById('chatbot-messages');
-    const inputContainer = document.createElement('div');
-    inputContainer.className = 'input-container';
-
-    const dateInput = document.createElement('input');
-    dateInput.type = 'date';
-    dateInput.id = 'date-input';
-    inputContainer.appendChild(dateInput);
-
-    const timeInput = document.createElement('input');
-    timeInput.type = 'time';
-    timeInput.id = 'time-input';
-    inputContainer.appendChild(timeInput);
-
+    const userInput = document.getElementById('user-input');
+    userInput.type = 'datetime-local';
     const confirmButton = document.createElement('button');
     confirmButton.textContent = 'Confirmer';
     confirmButton.onclick = () => {
-        const dateValue = document.getElementById('date-input').value;
-        const timeValue = document.getElementById('time-input').value;
-        nextStep(`${dateValue} ${timeValue}`);
+        const dateTimeValue = userInput.value;
+        userInput.type = 'text';
+        nextStep(dateTimeValue);
     };
-    inputContainer.appendChild(confirmButton);
-
-    messagesContainer.appendChild(inputContainer);
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    const chatbotInput = document.getElementById('chatbot-input');
+    chatbotInput.appendChild(confirmButton);
 }
 
 function displayAddressInput() {
-    const messagesContainer = document.getElementById('chatbot-messages');
-    const inputContainer = document.createElement('div');
-    inputContainer.className = 'input-container';
-
-    const addressInput = document.createElement('input');
-    addressInput.type = 'text';
-    addressInput.id = 'address-input';
-    addressInput.placeholder = 'Entrez une adresse';
-    inputContainer.appendChild(addressInput);
-
-    const confirmButton = document.createElement('button');
-    confirmButton.textContent = 'Confirmer';
-    confirmButton.onclick = () => {
-        const addressValue = document.getElementById('address-input').value;
-        nextStep(addressValue);
-    };
-    inputContainer.appendChild(confirmButton);
-
-    messagesContainer.appendChild(inputContainer);
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-    initAutocomplete();
+    const userInput = document.getElementById('user-input');
+    userInput.type = 'text';
+    userInput.placeholder = 'Entrez une adresse';
+    userInput.addEventListener('input', handleAddressAutocomplete);
 }
 
-function initAutocomplete() {
-    const addressInput = document.getElementById('address-input');
-    const autocomplete = new google.maps.places.Autocomplete(addressInput);
-    autocomplete.setFields(['address_components', 'formatted_address']);
-    autocomplete.addListener('place_changed', () => {
-        const place = autocomplete.getPlace();
-        addressInput.value = place.formatted_address;
+function handleAddressAutocomplete() {
+    const userInput = document.getElementById('user-input');
+    const query = userInput.value;
+
+    if (query.length > 2) {
+        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}`)
+            .then(response => response.json())
+            .then(data => {
+                const suggestions = data.map(place => place.display_name);
+                displayAddressSuggestions(suggestions);
+            })
+            .catch(error => console.error('Error fetching address suggestions:', error));
+    }
+}
+
+function displayAddressSuggestions(suggestions) {
+    const messagesContainer = document.getElementById('chatbot-messages');
+    const suggestionsContainer = document.createElement('div');
+    suggestionsContainer.className = 'suggestions-container';
+
+    suggestions.forEach(suggestion => {
+        const suggestionElement = document.createElement('div');
+        suggestionElement.className = 'suggestion-item';
+        suggestionElement.textContent = suggestion;
+        suggestionElement.onclick = () => {
+            const userInput = document.getElementById('user-input');
+            userInput.value = suggestion;
+            nextStep(suggestion);
+        };
+        suggestionsContainer.appendChild(suggestionElement);
     });
+
+    messagesContainer.appendChild(suggestionsContainer);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 
 function nextStep(userResponse) {
@@ -149,7 +151,7 @@ function nextStep(userResponse) {
                 formData.nb_passagers = userResponse;
                 break;
             case 7:
-                const [date_depart_aller, heure_depart_aller] = userResponse.split(' ');
+                const [date_depart_aller, heure_depart_aller] = userResponse.split('T');
                 formData.date_depart_aller = date_depart_aller;
                 formData.heure_depart_aller = heure_depart_aller;
                 break;
@@ -157,7 +159,7 @@ function nextStep(userResponse) {
                 formData.adresse_depart_aller = userResponse;
                 break;
             case 9:
-                const [date_arrivee_aller, heure_arrivee_aller] = userResponse.split(' ');
+                const [date_arrivee_aller, heure_arrivee_aller] = userResponse.split('T');
                 formData.date_arrivee_aller = date_arrivee_aller;
                 formData.heure_arrivee_aller = heure_arrivee_aller;
                 break;
@@ -165,12 +167,12 @@ function nextStep(userResponse) {
                 formData.adresse_arrivee_aller = userResponse;
                 break;
             case 11:
-                const [date_depart_retour, heure_depart_retour] = userResponse.split(' ');
+                const [date_depart_retour, heure_depart_retour] = userResponse.split('T');
                 formData.date_depart_retour = date_depart_retour;
                 formData.heure_depart_retour = heure_depart_retour;
                 break;
             case 12:
-                const [date_arrivee_retour, heure_arrivee_retour] = userResponse.split(' ');
+                const [date_arrivee_retour, heure_arrivee_retour] = userResponse.split('T');
                 formData.date_arrivee_retour = date_arrivee_retour;
                 formData.heure_arrivee_retour = heure_arrivee_retour;
                 formData.adresse_arrivee_retour = "Adresse à définir"; // Ajuster si nécessaire
