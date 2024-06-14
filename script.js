@@ -61,34 +61,21 @@ function displayMessage(message, sender = 'bot', buttons = []) {
     }
 
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
 
-    if (step === questions.length) {
-        const userInput = document.getElementById('user-input');
-        userInput.style.display = 'none'; // Masquer la barre de texte à la dernière étape
+function hideInputAndButton() {
+    const userInput = document.getElementById('user-input');
+    userInput.style.display = 'none'; // Masquer la barre de texte
+    const sendButton = document.getElementById('send-button');
+    if (sendButton) {
+        sendButton.style.display = 'none'; // Masquer le bouton envoyer
     }
 }
 
 function displayDateTimeInput() {
     const userInput = document.getElementById('user-input');
     userInput.type = 'datetime-local';
-
-    // Supprimer le bouton précédent
-    const previousConfirmButton = document.getElementById('confirm-button');
-    if (previousConfirmButton) {
-        previousConfirmButton.remove();
-    }
-
-    const confirmButton = document.createElement('button');
-    confirmButton.id = 'confirm-button';
-    confirmButton.textContent = 'Confirmer';
-    confirmButton.onclick = () => {
-        const dateTimeValue = userInput.value;
-        userInput.type = 'text';
-        nextStep(dateTimeValue);
-        confirmButton.remove(); // Supprimer le bouton après utilisation
-    };
-    const chatbotInput = document.getElementById('chatbot-input');
-    chatbotInput.appendChild(confirmButton);
+    userInput.value = ''; // Réinitialiser la valeur de l'entrée de date/heure
 }
 
 function displayAddressInput() {
@@ -213,6 +200,7 @@ function nextStep(userResponse) {
         step++;
     } else {
         displayMessage('Merci pour vos réponses. Les données vont être envoyées.');
+        hideInputAndButton();
         sendFormData();
     }
 }
