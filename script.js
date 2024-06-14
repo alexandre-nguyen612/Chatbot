@@ -53,7 +53,7 @@ function displayMessage(message, sender = 'bot', buttons = []) {
             buttonElement.textContent = buttonText;
             buttonElement.onclick = () => {
                 nextStep(buttonText);
-                buttonElement.disabled = true; // Désactiver le bouton après clic
+                buttonsContainer.style.display = 'none'; // Masquer les boutons après clic
             };
             buttonsContainer.appendChild(buttonElement);
         });
@@ -71,7 +71,15 @@ function displayMessage(message, sender = 'bot', buttons = []) {
 function displayDateTimeInput() {
     const userInput = document.getElementById('user-input');
     userInput.type = 'datetime-local';
+
+    // Retirer les boutons précédents s'il y en a
+    const previousButton = document.getElementById('confirm-button');
+    if (previousButton) {
+        previousButton.remove();
+    }
+
     const confirmButton = document.createElement('button');
+    confirmButton.id = 'confirm-button';
     confirmButton.textContent = 'Confirmer';
     confirmButton.onclick = () => {
         const dateTimeValue = userInput.value;
@@ -86,6 +94,13 @@ function displayAddressInput() {
     const userInput = document.getElementById('user-input');
     userInput.type = 'text';
     userInput.placeholder = 'Entrez une adresse';
+
+    // Retirer les suggestions précédentes s'il y en a
+    const previousSuggestions = document.querySelector('.suggestions-container');
+    if (previousSuggestions) {
+        previousSuggestions.remove();
+    }
+
     userInput.addEventListener('input', handleAddressAutocomplete);
 }
 
@@ -94,7 +109,7 @@ function handleAddressAutocomplete() {
     const query = userInput.value;
 
     if (query.length > 2) {
-        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}`)
+        fetch(`https://nominatim.openstreetmap.org/search?format=json&countrycodes=fr&q=${query}`)
             .then(response => response.json())
             .then(data => {
                 const suggestions = data.map(place => place.display_name);
@@ -117,6 +132,7 @@ function displayAddressSuggestions(suggestions) {
             const userInput = document.getElementById('user-input');
             userInput.value = suggestion;
             nextStep(suggestion);
+            suggestionsContainer.style.display = 'none'; // Masquer les suggestions après clic
         };
         suggestionsContainer.appendChild(suggestionElement);
     });
@@ -228,7 +244,6 @@ function sendFormData() {
         displayMessage('Une erreur s\'est produite.');
     });
 }
-
 // Initialisation du chatbot
 window.onload = function() {
     displayMessage('Bonjour !');
