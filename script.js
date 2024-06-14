@@ -205,8 +205,8 @@ function nextStep(userResponse) {
         step++;
     } else {
         displayMessage('Merci pour vos réponses. Les données vont être envoyées.');
-        hideInputAndButton();
         sendFormData();
+        hideInputAndButton();
     }
 }
 
