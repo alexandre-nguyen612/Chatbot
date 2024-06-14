@@ -73,7 +73,10 @@ function scrollToBottom() {
 function hideInputAndButton() {
     const userInput = document.getElementById('user-input');
     userInput.style.display = 'none'; // Masquer la barre de texte
-    sendButton.style.display = 'none'; // Masquer le bouton envoyer
+    const sendButton = document.getElementById('send-button');
+    if (sendButton) {
+        sendButton.style.display = 'none'; // Masquer le bouton envoyer
+    }
 }
 
 function displayDateTimeInput() {
