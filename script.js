@@ -300,4 +300,4 @@ function initChatbot() {
 // Lorsque la page a fini de charger, initialiser le chatbot
 window.onload = function() {
     initChatbot();
-};
+}
