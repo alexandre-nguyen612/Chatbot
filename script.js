@@ -1,4 +1,6 @@
+// Initialisation des variables
 let step = 0;
+
 let formData = {
     civilite: '',
     nom: '',
@@ -40,6 +42,7 @@ const questions = [
     "Quelle est l'adresse d'arrivée pour le trajet retour ?"
 ];
 
+// Fonction pour afficher un message dans le chatbot
 function displayMessage(message, sender = 'bot', buttons = []) {
     const messagesContainer = document.getElementById('chatbot-messages');
     const messageElement = document.createElement('div');
@@ -47,6 +50,7 @@ function displayMessage(message, sender = 'bot', buttons = []) {
     messageElement.textContent = message;
     messagesContainer.appendChild(messageElement);
 
+    // Afficher des boutons s'il y en a
     if (buttons.length > 0) {
         const buttonsContainer = document.createElement('div');
         buttonsContainer.className = 'buttons-container';
@@ -62,15 +66,17 @@ function displayMessage(message, sender = 'bot', buttons = []) {
         messagesContainer.appendChild(buttonsContainer);
     }
 
-    // Faire défiler vers le bas le nouveau message
+    // Faire défiler vers le bas
     scrollToBottom();
 }
 
+// Fonction pour faire défiler vers le bas
 function scrollToBottom() {
     const messagesContainer = document.getElementById('chatbot-messages');
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 
+// Fonction pour masquer l'entrée utilisateur et le bouton d'envoi
 function hideInputAndButton() {
     const userInput = document.getElementById('user-input');
     userInput.style.display = 'none'; // Masquer la barre de texte
@@ -80,18 +86,21 @@ function hideInputAndButton() {
     }
 }
 
+// Fonction pour afficher l'entrée date/heure
 function displayDateTimeInput() {
     const userInput = document.getElementById('user-input');
     userInput.type = 'datetime-local';
     userInput.value = ''; // Réinitialiser la valeur de l'entrée de date/heure
 }
 
+// Fonction pour afficher l'entrée texte
 function displayTextInput() {
     const userInput = document.getElementById('user-input');
     userInput.type = 'text';
     userInput.value = '';
 }
 
+// Fonction pour afficher l'entrée d'adresse
 function displayAddressInput() {
     const userInput = document.getElementById('user-input');
     userInput.type = 'text';
@@ -103,13 +112,16 @@ function displayAddressInput() {
         previousSuggestions.remove();
     }
 
+    // Écouter les changements dans l'entrée
     userInput.addEventListener('input', handleAddressAutocomplete);
 }
 
+// Fonction pour gérer l'autocomplétion d'adresse
 function handleAddressAutocomplete() {
     const userInput = document.getElementById('user-input');
     const query = userInput.value;
 
+    // Si la requête est assez longue
     if (query.length > 2) {
         fetch(`https://nominatim.openstreetmap.org/search?format=json&countrycodes=fr&q=${query}`)
             .then(response => response.json())
@@ -118,10 +130,11 @@ function handleAddressAutocomplete() {
                 const suggestions = frenchAddresses.map(place => place.display_name);
                 displayAddressSuggestions(suggestions);
             })
-            .catch(error => console.error('Error fetching address suggestions:', error));
+            .catch(error => console.error('Erreur lors de la récupération des suggestions d\'adresse :', error));
     }
 }
 
+// Fonction pour afficher les suggestions d'adresse
 function displayAddressSuggestions(suggestions) {
     const messagesContainer = document.getElementById('chatbot-messages');
     const suggestionsContainer = document.createElement('div');
@@ -144,6 +157,7 @@ function displayAddressSuggestions(suggestions) {
     scrollToBottom();
 }
 
+// Fonction pour gérer la prochaine étape du chatbot
 function nextStep(userResponse) {
     if (userResponse !== undefined) {
         displayMessage(userResponse, 'user');
@@ -204,6 +218,7 @@ function nextStep(userResponse) {
         }
     }
 
+    // Si ce n'est pas la dernière étape
     if (step < questions.length) {
         if (step === 0) {
             displayMessage(questions[step], 'bot', ['M.', 'Mme', 'Mlle']);
@@ -225,16 +240,7 @@ function nextStep(userResponse) {
     }
 }
 
-function sendMessage() {
-    const userInput = document.getElementById('user-input');
-    const message = userInput.value.trim();
-    if (message !== '') {
-        userInput.value = '';
-        nextStep(message);
-    }
-    scrollToBottom(); // Faire défiler vers le bas après l'envoi du message
-}
-
+// Fonction pour envoyer les données du formulaire
 function sendFormData() {
     fetch('https://hook.eu2.make.com/k2uq4prk7wupnnpij8666sphqs4q11hm', {
         method: 'POST',
@@ -243,22 +249,55 @@ function sendFormData() {
         },
         body: JSON.stringify(formData)
     })
-    .then(response => {
-        if (response.ok) {
-            displayMessage('Les données ont été envoyées avec succès.');
-        } else {
-            throw new Error('Erreur lors de l\'envoi des données.');
-        }
+    .then(response => response.json())
+    .then(data => {
+        console.log('Réponse du serveur :', data);
+        displayMessage('Les données ont été envoyées avec succès. Merci !');
     })
     .catch(error => {
-        console.error('Erreur:', error);
-        displayMessage('Une erreur s\'est produite.');
+        console.error('Erreur lors de l\'envoi des données :', error);
+        displayMessage('Une erreur est survenue lors de l\'envoi des données. Veuillez réessayer plus tard.');
     });
 }
 
 // Initialisation du chatbot
+function initChatbot() {
+    const chatbotForm = document.getElementById('chatbot-form');
+    const userInput = document.getElementById('user-input');
+    const sendButton = document.getElementById('send-button');
+
+    // Écouteur d'événement sur la soumission du formulaire
+    chatbotForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const userMessage = userInput.value;
+        userInput.value = ''; // Réinitialiser l'entrée utilisateur
+
+        if (userMessage.trim() !== '') {
+            nextStep(userMessage);
+        }
+    });
+
+    // Écouteur d'événement sur le bouton d'envoi
+    if (sendButton) {
+        sendButton.addEventListener('click', function(event) {
+            event.preventDefault();
+            const userMessage = userInput.value;
+            userInput.value = ''; // Réinitialiser l'entrée utilisateur
+
+            if (userMessage.trim() !== '') {
+                nextStep(userMessage);
+            }
+        });
+    }
+
+    // Démarrer la conversation
+    displayMessage('Bonjour ! Je suis votre assistant pour organiser votre voyage.');
+    displayMessage('Commençons par quelques questions.');
+    displayMessage(questions[step], 'bot', ['M.', 'Mme', 'Mlle']);
+    step++;
+}
+
+// Lorsque la page a fini de charger, initialiser le chatbot
 window.onload = function() {
-    displayMessage('Bonjour !');
-    setTimeout(() => displayMessage('Nous avons besoin de quelques réponses pour établir votre devis.'), 1000);
-    setTimeout(nextStep, 2000);
+    initChatbot();
 };
