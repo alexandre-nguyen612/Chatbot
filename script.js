@@ -62,7 +62,8 @@ function displayMessage(message, sender = 'bot', buttons = []) {
         messagesContainer.appendChild(buttonsContainer);
     }
 
-    scrollToBottom();
+    // Faire défiler vers le bas le nouveau message
+    messageElement.scrollIntoView({ behavior: "smooth", block: "end" });
 }
 
 function scrollToBottom() {
