@@ -63,12 +63,11 @@ function displayMessage(message, sender = 'bot', buttons = []) {
     }
 
     // Faire défiler vers le bas le nouveau message
-    scrollToBottom();
+    scrollToBottom(messagesContainer);
 }
 
-function scrollToBottom() {
-    const messagesContainer = document.getElementById('chatbot-messages');
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+function scrollToBottom(container) {
+    container.scrollTop = container.scrollHeight;
 }
 
 function hideInputAndButton() {
@@ -141,7 +140,7 @@ function displayAddressSuggestions(suggestions) {
     });
 
     messagesContainer.appendChild(suggestionsContainer);
-    scrollToBottom();
+    scrollToBottom(messagesContainer);
 }
 
 function nextStep(userResponse) {
@@ -223,6 +222,8 @@ function nextStep(userResponse) {
         sendFormData();
         hideInputAndButton();
     }
+
+    scrollToBottom(document.getElementById('chatbot-messages')); // Faire défiler vers le bas à chaque étape
 }
 
 function sendMessage() {
@@ -232,7 +233,7 @@ function sendMessage() {
         userInput.value = '';
         nextStep(message);
     }
-    scrollToBottom(); // Faire défiler vers le bas après l'envoi du message
+    scrollToBottom(document.getElementById('chatbot-messages')); // Faire défiler vers le bas après l'envoi du message
 }
 
 function sendFormData() {
@@ -253,12 +254,25 @@ function sendFormData() {
     .catch(error => {
         console.error('Erreur:', error);
         displayMessage('Une erreur s\'est produite.');
-    });
+});
 }
 
 // Initialisation du chatbot
-window.onload = function() {
-    displayMessage('Bonjour !');
-    setTimeout(() => displayMessage('Nous avons besoin de quelques réponses pour établir votre devis.'), 1000);
-    setTimeout(nextStep, 2000);
+window.onload = () => {
+    displayMessage('Bonjour ! Je suis votre assistant pour la réservation de voyage.');
+    displayMessage(questions[step], 'bot', ['M.', 'Mme', 'Mlle']);
+    step++;
 };
+
+// Fonction pour faire défiler automatiquement vers le bas
+function scrollToBottom(container) {
+    container.scrollTop = container.scrollHeight;
+}
+
+// Ajouter un événement de défilement vers le bas lors de l'entrée d'un message par l'utilisateur
+document.getElementById('user-input').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') {
+        sendMessage();
+        scrollToBottom(document.getElementById('chatbot-messages'));
+    }
+});
