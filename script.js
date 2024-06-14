@@ -199,7 +199,7 @@ function nextStep(userResponse) {
             displayDateTimeInput();
         } else if (step === 8 || step === 10 || step === 12) {
             displayMessage(questions[step]);
-            displayAddressInput();
+            displayDateTimeInput();
         } else {
             displayMessage(questions[step]);
         }
