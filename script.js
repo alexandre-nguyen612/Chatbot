@@ -68,7 +68,10 @@ function displayMessage(message, sender = 'bot', buttons = []) {
 
 function scrollToBottom() {
     const messagesContainer = document.getElementById('chatbot-messages');
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    // Utiliser setTimeout pour attendre que le DOM soit mis à jour avant de faire défiler
+    setTimeout(() => {
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }, 100);
 }
 
 function hideInputAndButton() {
