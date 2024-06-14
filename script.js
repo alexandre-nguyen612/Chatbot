@@ -301,3 +301,9 @@ function initChatbot() {
 window.onload = function() {
     initChatbot();
 }
+
+// Fonction pour faire défiler vers le bas à chaque nouveau message
+function scrollToBottom() {
+    const messagesContainer = document.getElementById('chatbot-messages');
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
