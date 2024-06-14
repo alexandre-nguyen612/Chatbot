@@ -36,7 +36,7 @@ const questions = [
     "Quelle est l'adresse d'arrivée pour le trajet aller ?",
     "Pour le départ retour, à quelle date et à quelle heure est prévu le départ ?",
     "À quelle date et à quelle heure est prévue l'arrivée pour le trajet retour ?",
-    "Quelle est l'adresse de départ pour le trajet retour ?"
+    "Quelle est l'adresse d'arrivée pour le trajet retour ?"
 ];
 
 function displayMessage(message, sender = 'bot', buttons = []) {
@@ -66,18 +66,47 @@ function displayMessage(message, sender = 'bot', buttons = []) {
     if (step === questions.length) {
         const userInput = document.getElementById('user-input');
         userInput.style.display = 'none'; // Masquer la barre de texte à la dernière étape
+        const sendButton = document.getElementById('send-button');
+        if (sendButton) {
+            sendButton.remove(); // Supprimer le bouton "Envoyer"
+        }
+        displayMessage('Le devis a bien été envoyé par e-mail.'); // Afficher le message de confirmation
     }
 }
 
 function displayDateTimeInput() {
     const userInput = document.getElementById('user-input');
     userInput.type = 'datetime-local';
+
+    // Supprimer le bouton précédent
+    const previousConfirmButton = document.getElementById('confirm-button');
+    if (previousConfirmButton) {
+        previousConfirmButton.remove();
+    }
+
+    const confirmButton = document.createElement('button');
+    confirmButton.id = 'confirm-button';
+    confirmButton.textContent = 'Confirmer';
+    confirmButton.onclick = () => {
+        const dateTimeValue = userInput.value;
+        userInput.type = 'text';
+        nextStep(dateTimeValue);
+        confirmButton.remove(); // Supprimer le bouton après utilisation
+    };
+    const chatbotInput = document.getElementById('chatbot-input');
+    chatbotInput.appendChild(confirmButton);
 }
 
 function displayAddressInput() {
     const userInput = document.getElementById('user-input');
     userInput.type = 'text';
     userInput.placeholder = 'Entrez une adresse';
+
+    // Retirer les suggestions précédentes s'il y en a
+    const previousSuggestions = document.querySelector('.suggestions-container');
+    if (previousSuggestions) {
+        previousSuggestions.remove();
+    }
 
     userInput.addEventListener('input', handleAddressAutocomplete);
 }
@@ -90,7 +119,8 @@ function handleAddressAutocomplete() {
         fetch(`https://nominatim.openstreetmap.org/search?format=json&countrycodes=fr&q=${query}`)
             .then(response => response.json())
             .then(data => {
-                const suggestions = data.map(place => place.display_name);
+                const frenchAddresses = data.filter(place => place.address.country_code === 'fr');
+                const suggestions = frenchAddresses.map(place => place.display_name);
                 displayAddressSuggestions(suggestions);
             })
             .catch(error => console.error('Error fetching address suggestions:', error));
@@ -122,56 +152,56 @@ function displayAddressSuggestions(suggestions) {
 function nextStep(userResponse) {
     if (userResponse !== undefined) {
         displayMessage(userResponse, 'user');
-        switch (step) {
-            case 1:
+        switch (step - 1) {
+            case 0:
                 formData.civilite = userResponse;
                 break;
-            case 2:
+            case 1:
                 formData.nom = userResponse;
                 break;
-            case 3:
+            case 2:
                 formData.prenom = userResponse;
                 break;
-            case 4:
+            case 3:
                 formData.telephone = userResponse;
                 break;
-            case 5:
+            case 4:
                 formData.mail = userResponse;
                 break;
-            case 6:
+            case 5:
                 formData.societe = userResponse;
                 break;
-            case 7:
+            case 6:
                 formData.nb_passagers = userResponse;
                 break;
-            case 8:
+            case 7:
                 const [date_depart_aller, heure_depart_aller] = userResponse.split('T');
                 formData.date_depart_aller = date_depart_aller;
                 formData.heure_depart_aller = heure_depart_aller;
                 break;
-            case 9:
+            case 8:
                 formData.adresse_depart_aller = userResponse;
                 break;
-            case 10:
+            case 9:
                 const [date_arrivee_aller, heure_arrivee_aller] = userResponse.split('T');
                 formData.date_arrivee_aller = date_arrivee_aller;
                 formData.heure_arrivee_aller = heure_arrivee_aller;
                 break;
-            case 11:
+            case 10:
                 formData.adresse_arrivee_aller = userResponse;
                 break;
-            case 12:
+            case 11:
                 const [date_depart_retour, heure_depart_retour] = userResponse.split('T');
                 formData.date_depart_retour = date_depart_retour;
                 formData.heure_depart_retour = heure_depart_retour;
                 break;
-            case 13:
-                formData.adresse_depart_retour = userResponse;
-                break;
-            case 14:
+            case 12:
                 const [date_arrivee_retour, heure_arrivee_retour] = userResponse.split('T');
                 formData.date_arrivee_retour = date_arrivee_retour;
                 formData.heure_arrivee_retour = heure_arrivee_retour;
+                break;
+            case 13:
+                formData.adresse_arrivee_retour = userResponse;
                 break;
         }
     }
@@ -179,10 +209,10 @@ function nextStep(userResponse) {
     if (step < questions.length) {
         if (step === 0) {
             displayMessage(questions[step], 'bot', ['M.', 'Mme', 'Mlle']);
-        } else if (step === 8 || step === 10 || step === 12) {
+        } else if (step === 7 || step === 9 || step === 11 || step === 13) {
             displayMessage(questions[step]);
             displayDateTimeInput();
-        } else if (step === 9 || step === 11 || step === 13) {
+        } else if (step === 8 || step === 10 || step === 12) {
             displayMessage(questions[step]);
             displayAddressInput();
         } else {
@@ -229,5 +259,5 @@ function sendFormData() {
 window.onload = function() {
     displayMessage('Bonjour !');
     setTimeout(() => displayMessage('Nous avons besoin de quelques réponses pour établir votre devis.'), 1000);
-    setTimeout(() => nextStep(), 2000);
+    setTimeout(nextStep, 2000);
 };
