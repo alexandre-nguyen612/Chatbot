@@ -35,7 +35,8 @@ const questions = [
     "À quelle date et à quelle heure est prévue l'arrivée pour le trajet aller ?",
     "Quelle est l'adresse d'arrivée pour le trajet aller ?",
     "Pour le départ retour, à quelle date et à quelle heure est prévu le départ ?",
-    "À quelle date et à quelle heure est prévue l'arrivée pour le trajet retour ?"
+    "À quelle date et à quelle heure est prévue l'arrivée pour le trajet retour ?",
+    "Quelle est l'adresse d'arrivée pour le trajet retour ?"
 ];
 
 function displayMessage(message, sender = 'bot', buttons = []) {
@@ -65,6 +66,11 @@ function displayMessage(message, sender = 'bot', buttons = []) {
     if (step === questions.length) {
         const userInput = document.getElementById('user-input');
         userInput.style.display = 'none'; // Masquer la barre de texte à la dernière étape
+        const sendButton = document.getElementById('send-button');
+        if (sendButton) {
+            sendButton.remove(); // Supprimer le bouton "Envoyer"
+        }
+        displayMessage('Le devis a bien été envoyé par e-mail.'); // Afficher le message de confirmation
     }
 }
 
@@ -193,6 +199,8 @@ function nextStep(userResponse) {
                 const [date_arrivee_retour, heure_arrivee_retour] = userResponse.split('T');
                 formData.date_arrivee_retour = date_arrivee_retour;
                 formData.heure_arrivee_retour = heure_arrivee_retour;
+                break;
+            case 13:
                 formData.adresse_arrivee_retour = userResponse;
                 break;
         }
