@@ -64,8 +64,10 @@ function displayMessage(message, sender = 'bot', buttons = []) {
 }
 
 function scrollToBottom() {
-    const messagesContainer = document.getElementById('chatbot-messages');
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: 'smooth'
+    });
 }
 
 function hideInputAndButton() {
