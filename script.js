@@ -255,13 +255,6 @@ function sendFormData() {
     });
 }
 
-// Observateur pour détecter les changements dans le conteneur de messages
-const messagesContainer = document.getElementById('chatbot-messages');
-const observer = new MutationObserver(() => {
-    scrollToBottom();
-});
-observer.observe(messagesContainer, { childList: true });
-
 // Initialisation du chatbot
 window.onload = function() {
     displayMessage('Bonjour !');
