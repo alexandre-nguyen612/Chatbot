@@ -60,6 +60,11 @@ function displayMessage(message, sender = 'bot', buttons = []) {
         messagesContainer.appendChild(buttonsContainer);
     }
 
+    scrollToBottom();
+}
+
+function scrollToBottom() {
+    const messagesContainer = document.getElementById('chatbot-messages');
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 
@@ -127,7 +132,7 @@ function displayAddressSuggestions(suggestions) {
     });
 
     messagesContainer.appendChild(suggestionsContainer);
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    scrollToBottom();
 }
 
 function nextStep(userResponse) {
