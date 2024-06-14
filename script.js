@@ -62,13 +62,14 @@ function displayMessage(message, sender = 'bot', buttons = []) {
         messagesContainer.appendChild(buttonsContainer);
     }
 
-    // Faire défiler vers le bas le nouveau message
     scrollToBottom();
 }
 
 function scrollToBottom() {
     const messagesContainer = document.getElementById('chatbot-messages');
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    setTimeout(() => {
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }, 100); // Délai pour s'assurer que le message est bien ajouté avant de faire défiler
 }
 
 function hideInputAndButton() {
