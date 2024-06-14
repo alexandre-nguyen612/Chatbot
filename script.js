@@ -31,7 +31,9 @@ const questions = [
     "Quelle est votre société ?",
     "Combien de passagers sont prévus pour ce voyage ?",
     "Pour le départ aller, à quelle date et à quelle heure est prévu le départ ? (format: JJ/MM/AAAA HH:MM)",
+    "Quelle est l'adresse de départ pour le trajet aller ?",
     "À quelle date et à quelle heure est prévue l'arrivée pour le trajet aller ? (format: JJ/MM/AAAA HH:MM)",
+    "Quelle est l'adresse d'arrivée pour le trajet aller ?",
     "Pour le départ retour, à quelle date et à quelle heure est prévu le départ ? (format: JJ/MM/AAAA HH:MM)",
     "À quelle date et à quelle heure est prévue l'arrivée pour le trajet retour ? (format: JJ/MM/AAAA HH:MM)"
 ];
@@ -74,25 +76,28 @@ function nextStep(userResponse) {
                 const [date_depart_aller, heure_depart_aller] = userResponse.split(' ');
                 formData.date_depart_aller = date_depart_aller;
                 formData.heure_depart_aller = heure_depart_aller;
-                formData.adresse_depart_aller = "Adresse à définir"; // Ajouter la logique si nécessaire
                 break;
             case 8:
+                formData.adresse_depart_aller = userResponse;
+                break;
+            case 9:
                 const [date_arrivee_aller, heure_arrivee_aller] = userResponse.split(' ');
                 formData.date_arrivee_aller = date_arrivee_aller;
                 formData.heure_arrivee_aller = heure_arrivee_aller;
-                formData.adresse_arrivee_aller = "Adresse à définir"; // Ajouter la logique si nécessaire
                 break;
-            case 9:
+            case 10:
+                formData.adresse_arrivee_aller = userResponse;
+                break;
+            case 11:
                 const [date_depart_retour, heure_depart_retour] = userResponse.split(' ');
                 formData.date_depart_retour = date_depart_retour;
                 formData.heure_depart_retour = heure_depart_retour;
-                formData.adresse_depart_retour = "Adresse à définir"; // Ajouter la logique si nécessaire
                 break;
-            case 10:
+            case 12:
                 const [date_arrivee_retour, heure_arrivee_retour] = userResponse.split(' ');
                 formData.date_arrivee_retour = date_arrivee_retour;
                 formData.heure_arrivee_retour = heure_arrivee_retour;
-                formData.adresse_arrivee_retour = "Adresse à définir"; // Ajouter la logique si nécessaire
+                formData.adresse_arrivee_retour = "Adresse à définir"; // Ajuster si nécessaire
                 break;
         }
     }
