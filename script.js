@@ -39,13 +39,34 @@ const questions = [
     "À quelle date et à quelle heure est prévue l'arrivée pour le trajet retour ?"
 ];
 
-function displayMessage(message, sender = 'bot') {
+function displayMessage(message, sender = 'bot', buttons = []) {
     const messagesContainer = document.getElementById('chatbot-messages');
     const messageElement = document.createElement('div');
     messageElement.className = sender === 'bot' ? 'bot-message' : 'user-message';
     messageElement.textContent = message;
     messagesContainer.appendChild(messageElement);
+
+    if (buttons.length > 0) {
+        const buttonsContainer = document.createElement('div');
+        buttonsContainer.className = 'buttons-container';
+        buttons.forEach(buttonText => {
+            const buttonElement = document.createElement('button');
+            buttonElement.textContent = buttonText;
+            buttonElement.onclick = () => {
+                nextStep(buttonText);
+                buttonsContainer.style.display = 'none'; // Masquer les boutons après clic
+            };
+            buttonsContainer.appendChild(buttonElement);
+        });
+        messagesContainer.appendChild(buttonsContainer);
+    }
+
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+    if (step === questions.length) {
+        const userInput = document.getElementById('user-input');
+        userInput.style.display = 'none'; // Masquer la barre de texte à la dernière étape
+    }
 }
 
 function displayDateTimeInput() {
@@ -102,52 +123,52 @@ function nextStep(userResponse) {
     if (userResponse !== undefined) {
         displayMessage(userResponse, 'user');
         switch (step) {
-            case 0:
+            case 1:
                 formData.civilite = userResponse;
                 break;
-            case 1:
+            case 2:
                 formData.nom = userResponse;
                 break;
-            case 2:
+            case 3:
                 formData.prenom = userResponse;
                 break;
-            case 3:
+            case 4:
                 formData.telephone = userResponse;
                 break;
-            case 4:
+            case 5:
                 formData.mail = userResponse;
                 break;
-            case 5:
+            case 6:
                 formData.societe = userResponse;
                 break;
-            case 6:
+            case 7:
                 formData.nb_passagers = userResponse;
                 break;
-            case 7:
+            case 8:
                 const [date_depart_aller, heure_depart_aller] = userResponse.split('T');
                 formData.date_depart_aller = date_depart_aller;
                 formData.heure_depart_aller = heure_depart_aller;
                 break;
-            case 8:
+            case 9:
                 formData.adresse_depart_aller = userResponse;
                 break;
-            case 9:
+            case 10:
                 const [date_arrivee_aller, heure_arrivee_aller] = userResponse.split('T');
                 formData.date_arrivee_aller = date_arrivee_aller;
                 formData.heure_arrivee_aller = heure_arrivee_aller;
                 break;
-            case 10:
+            case 11:
                 formData.adresse_arrivee_aller = userResponse;
                 break;
-            case 11:
+            case 12:
                 const [date_depart_retour, heure_depart_retour] = userResponse.split('T');
                 formData.date_depart_retour = date_depart_retour;
                 formData.heure_depart_retour = heure_depart_retour;
                 break;
-            case 12:
+            case 13:
                 formData.adresse_depart_retour = userResponse;
                 break;
-            case 13:
+            case 14:
                 const [date_arrivee_retour, heure_arrivee_retour] = userResponse.split('T');
                 formData.date_arrivee_retour = date_arrivee_retour;
                 formData.heure_arrivee_retour = heure_arrivee_retour;
@@ -155,20 +176,19 @@ function nextStep(userResponse) {
         }
     }
 
-    step++;
-
     if (step < questions.length) {
-        displayMessage(questions[step]);
-        const userInput = document.getElementById('user-input');
-        userInput.type = 'text';
-        userInput.placeholder = 'Entrez votre réponse ici...';
-
-        if (step === 7 || step === 9 || step === 11 || step === 13) {
-            displayDateTimeInput();
+        if (step === 0) {
+            displayMessage(questions[step], 'bot', ['M.', 'Mme', 'Mlle']);
         } else if (step === 8 || step === 10 || step === 12) {
+            displayMessage(questions[step]);
+            displayDateTimeInput();
+        } else if (step === 9 || step === 11 || step === 13) {
+            displayMessage(questions[step]);
             displayAddressInput();
+        } else {
+            displayMessage(questions[step]);
         }
-
+        step++;
     } else {
         displayMessage('Merci pour vos réponses. Les données vont être envoyées.');
         sendFormData();
@@ -210,8 +230,6 @@ window.onload = function() {
     displayMessage('Bonjour !');
     setTimeout(() => displayMessage('Nous avons besoin de quelques réponses pour établir votre devis.'), 1000);
     setTimeout(() => {
-        displayMessage(questions[step]);
-        const userInput = document.getElementById('user-input');
-        userInput.placeholder = 'Entrez votre réponse ici...';
+        displayMessage(questions[0], 'bot', ['M.', 'Mme', 'Mlle']);
     }, 2000);
 };
