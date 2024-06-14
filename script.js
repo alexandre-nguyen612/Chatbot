@@ -217,6 +217,7 @@ function sendMessage() {
         userInput.value = '';
         nextStep(message);
     }
+    scrollToBottom(); // Faire défiler vers le bas après l'envoi du message
 }
 
 function sendFormData() {
