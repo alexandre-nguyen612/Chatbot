@@ -187,6 +187,7 @@ function nextStep(userResponse) {
                 const [date_arrivee_retour, heure_arrivee_retour] = userResponse.split('T');
                 formData.date_arrivee_retour = date_arrivee_retour;
                 formData.heure_arrivee_retour = heure_arrivee_retour;
+                formData.adresse_arrivee_retour = userResponse;
                 break;
         }
     }
@@ -199,7 +200,7 @@ function nextStep(userResponse) {
             displayDateTimeInput();
         } else if (step === 8 || step === 10 || step === 12) {
             displayMessage(questions[step]);
-            displayAdressInput();
+            displayAddressInput();
         } else {
             displayMessage(questions[step]);
         }
