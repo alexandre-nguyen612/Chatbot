@@ -30,21 +30,97 @@ const questions = [
     "Quel est votre adresse e-mail ?",
     "Quelle est votre société ?",
     "Combien de passagers sont prévus pour ce voyage ?",
-    "Pour le départ aller, à quelle date et à quelle heure est prévu le départ ? (format: JJ/MM/AAAA HH:MM)",
+    "Pour le départ aller, à quelle date et à quelle heure est prévu le départ ?",
     "Quelle est l'adresse de départ pour le trajet aller ?",
-    "À quelle date et à quelle heure est prévue l'arrivée pour le trajet aller ? (format: JJ/MM/AAAA HH:MM)",
+    "À quelle date et à quelle heure est prévue l'arrivée pour le trajet aller ?",
     "Quelle est l'adresse d'arrivée pour le trajet aller ?",
-    "Pour le départ retour, à quelle date et à quelle heure est prévu le départ ? (format: JJ/MM/AAAA HH:MM)",
-    "À quelle date et à quelle heure est prévue l'arrivée pour le trajet retour ? (format: JJ/MM/AAAA HH:MM)"
+    "Pour le départ retour, à quelle date et à quelle heure est prévu le départ ?",
+    "À quelle date et à quelle heure est prévue l'arrivée pour le trajet retour ?"
 ];
 
-function displayMessage(message, sender = 'bot') {
+function displayMessage(message, sender = 'bot', buttons = []) {
     const messagesContainer = document.getElementById('chatbot-messages');
     const messageElement = document.createElement('div');
     messageElement.className = sender === 'bot' ? 'bot-message' : 'user-message';
     messageElement.textContent = message;
     messagesContainer.appendChild(messageElement);
+
+    if (buttons.length > 0) {
+        const buttonsContainer = document.createElement('div');
+        buttonsContainer.className = 'buttons-container';
+        buttons.forEach(buttonText => {
+            const buttonElement = document.createElement('button');
+            buttonElement.textContent = buttonText;
+            buttonElement.onclick = () => nextStep(buttonText);
+            buttonsContainer.appendChild(buttonElement);
+        });
+        messagesContainer.appendChild(buttonsContainer);
+    }
+
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
+function displayDateTimeInput() {
+    const messagesContainer = document.getElementById('chatbot-messages');
+    const inputContainer = document.createElement('div');
+    inputContainer.className = 'input-container';
+
+    const dateInput = document.createElement('input');
+    dateInput.type = 'date';
+    dateInput.id = 'date-input';
+    inputContainer.appendChild(dateInput);
+
+    const timeInput = document.createElement('input');
+    timeInput.type = 'time';
+    timeInput.id = 'time-input';
+    inputContainer.appendChild(timeInput);
+
+    const confirmButton = document.createElement('button');
+    confirmButton.textContent = 'Confirmer';
+    confirmButton.onclick = () => {
+        const dateValue = document.getElementById('date-input').value;
+        const timeValue = document.getElementById('time-input').value;
+        nextStep(`${dateValue} ${timeValue}`);
+    };
+    inputContainer.appendChild(confirmButton);
+
+    messagesContainer.appendChild(inputContainer);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
+function displayAddressInput() {
+    const messagesContainer = document.getElementById('chatbot-messages');
+    const inputContainer = document.createElement('div');
+    inputContainer.className = 'input-container';
+
+    const addressInput = document.createElement('input');
+    addressInput.type = 'text';
+    addressInput.id = 'address-input';
+    addressInput.placeholder = 'Entrez une adresse';
+    inputContainer.appendChild(addressInput);
+
+    const confirmButton = document.createElement('button');
+    confirmButton.textContent = 'Confirmer';
+    confirmButton.onclick = () => {
+        const addressValue = document.getElementById('address-input').value;
+        nextStep(addressValue);
+    };
+    inputContainer.appendChild(confirmButton);
+
+    messagesContainer.appendChild(inputContainer);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+    initAutocomplete();
+}
+
+function initAutocomplete() {
+    const addressInput = document.getElementById('address-input');
+    const autocomplete = new google.maps.places.Autocomplete(addressInput);
+    autocomplete.setFields(['address_components', 'formatted_address']);
+    autocomplete.addListener('place_changed', () => {
+        const place = autocomplete.getPlace();
+        addressInput.value = place.formatted_address;
+    });
 }
 
 function nextStep(userResponse) {
@@ -103,7 +179,17 @@ function nextStep(userResponse) {
     }
 
     if (step < questions.length) {
-        displayMessage(questions[step]);
+        if (step === 0) {
+            displayMessage(questions[step], 'bot', ['M.', 'Mme', 'Mlle']);
+        } else if (step === 7 || step === 9 || step === 11 || step === 13) {
+            displayMessage(questions[step]);
+            displayDateTimeInput();
+        } else if (step === 8 || step === 10 || step === 12) {
+            displayMessage(questions[step]);
+            displayAddressInput();
+        } else {
+            displayMessage(questions[step]);
+        }
         step++;
     } else {
         displayMessage('Merci pour vos réponses. Les données vont être envoyées.');
