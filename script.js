@@ -35,8 +35,8 @@ const questions = [
     "À quelle date et à quelle heure est prévue l'arrivée pour le trajet aller ?",
     "Quelle est l'adresse d'arrivée pour le trajet aller ?",
     "Pour le départ retour, à quelle date et à quelle heure est prévu le départ ?",
-    "Quelle est l'adresse de départ pour le trajet retour ?",
-    "À quelle date et à quelle heure est prévue l'arrivée pour le trajet retour ?"
+    "À quelle date et à quelle heure est prévue l'arrivée pour le trajet retour ?",
+    "Quelle est l'adresse de départ pour le trajet retour ?"
 ];
 
 function displayMessage(message, sender = 'bot', buttons = []) {
@@ -229,7 +229,5 @@ function sendFormData() {
 window.onload = function() {
     displayMessage('Bonjour !');
     setTimeout(() => displayMessage('Nous avons besoin de quelques réponses pour établir votre devis.'), 1000);
-    setTimeout(() => {
-        displayMessage(questions[0], 'bot', ['M.', 'Mme', 'Mlle']);
-    }, 2000);
+    setTimeout(() => nextStep(), 2000);
 };
