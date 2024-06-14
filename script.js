@@ -113,7 +113,8 @@ function handleAddressAutocomplete() {
         fetch(`https://nominatim.openstreetmap.org/search?format=json&countrycodes=fr&q=${query}`)
             .then(response => response.json())
             .then(data => {
-                const suggestions = data.map(place => place.display_name);
+                const frenchAddresses = data.filter(place => place.address.country_code === 'fr');
+                const suggestions = frenchAddresses.map(place => place.display_name);
                 displayAddressSuggestions(suggestions);
             })
             .catch(error => console.error('Error fetching address suggestions:', error));
