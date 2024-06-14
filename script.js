@@ -62,12 +62,12 @@ function displayMessage(message, sender = 'bot', buttons = []) {
         messagesContainer.appendChild(buttonsContainer);
     }
 
-    // Faire défiler vers le bas le nouveau message
-    scrollToBottom(messagesContainer);
+    scrollToBottom();
 }
 
-function scrollToBottom(container) {
-    container.scrollTop = container.scrollHeight;
+function scrollToBottom() {
+    const messagesContainer = document.getElementById('chatbot-messages');
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 
 function hideInputAndButton() {
@@ -140,7 +140,7 @@ function displayAddressSuggestions(suggestions) {
     });
 
     messagesContainer.appendChild(suggestionsContainer);
-    scrollToBottom(messagesContainer);
+    scrollToBottom();
 }
 
 function nextStep(userResponse) {
@@ -223,7 +223,7 @@ function nextStep(userResponse) {
         hideInputAndButton();
     }
 
-    scrollToBottom(document.getElementById('chatbot-messages')); // Faire défiler vers le bas à chaque étape
+    scrollToBottom(); // Scroll vers le bas à chaque étape
 }
 
 function sendMessage() {
@@ -233,11 +233,11 @@ function sendMessage() {
         userInput.value = '';
         nextStep(message);
     }
-    scrollToBottom(document.getElementById('chatbot-messages')); // Faire défiler vers le bas après l'envoi du message
+    scrollToBottom(); // Scroll vers le bas après l'envoi du message
 }
 
 function sendFormData() {
-    fetch('https://hook.eu2.make.com/k2uq4prk7wupnnpij8666sphqs4q11hm', {
+    fetch('https://hookb.in/b1L0jOy5qOcXyyQmyB9K', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -254,11 +254,13 @@ function sendFormData() {
     .catch(error => {
         console.error('Erreur:', error);
         displayMessage('Une erreur s\'est produite.');
-});
+    });
+
+    scrollToBottom(); // Scroll vers le bas après l'envoi des données
 }
 
 // Initialisation du chatbot
-window.onload = () => {
+window.onload = function() {
     displayMessage('Bonjour ! Je suis votre assistant pour la réservation de voyage.');
     displayMessage(questions[step], 'bot', ['M.', 'Mme', 'Mlle']);
     step++;
