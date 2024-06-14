@@ -67,9 +67,7 @@ function displayMessage(message, sender = 'bot', buttons = []) {
 
 function scrollToBottom() {
     const messagesContainer = document.getElementById('chatbot-messages');
-    setTimeout(() => {
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    }, 100); // Délai pour s'assurer que le message est bien ajouté avant de faire défiler
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 
 function hideInputAndButton() {
@@ -256,6 +254,13 @@ function sendFormData() {
         displayMessage('Une erreur s\'est produite.');
     });
 }
+
+// Observateur pour détecter les changements dans le conteneur de messages
+const messagesContainer = document.getElementById('chatbot-messages');
+const observer = new MutationObserver(() => {
+    scrollToBottom();
+});
+observer.observe(messagesContainer, { childList: true });
 
 // Initialisation du chatbot
 window.onload = function() {
