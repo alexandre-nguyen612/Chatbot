@@ -124,7 +124,6 @@ function nextStep(userResponse) {
     if (step < questions.length) {
         displayMessage(questions[step], 'bot', step === 7 || step === 9 || step === 11 || step === 13 ? 'datetime-local' : 'text');
     } else {
-        displayMessage('Merci pour vos réponses. Les données vont être envoyées.', 'bot');
         sendFormData();
     }
 }
@@ -148,16 +147,7 @@ function sendFormData() {
     })
     .then(response => {
         if (response.ok) {
-            const messagesContainer = document.getElementById('chatbot-messages');
-            const messageElement = document.createElement('div');
-            messageElement.className = 'bot-message';
-            messageElement.textContent = 'Le devis a bien été envoyé par e-mail.';
-            messagesContainer.appendChild(messageElement);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-            // Supprimer la barre de texte à la fin de la conversation
-            const userInput = document.getElementById('user-input');
-            userInput.style.display = 'none';
+            displaySuccessMessage();
         } else {
             throw new Error('Erreur lors de l\'envoi des données.');
         }
@@ -166,6 +156,19 @@ function sendFormData() {
         console.error('Erreur:', error);
         displayMessage('Une erreur s\'est produite.');
     });
+}
+
+function displaySuccessMessage() {
+    const messagesContainer = document.getElementById('chatbot-messages');
+    const messageElement = document.createElement('div');
+    messageElement.className = 'bot-message';
+    messageElement.textContent = 'Le devis a bien été envoyé par e-mail.';
+    messagesContainer.appendChild(messageElement);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+    // Supprimer la barre de texte à la fin de la conversation
+    const userInput = document.getElementById('user-input');
+    userInput.style.display = 'none';
 }
 
 // Initialisation du chatbot
