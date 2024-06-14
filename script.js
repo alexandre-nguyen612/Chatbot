@@ -72,10 +72,10 @@ function displayDateTimeInput() {
     const userInput = document.getElementById('user-input');
     userInput.type = 'datetime-local';
 
-    // Retirer les boutons précédents s'il y en a
-    const previousButton = document.getElementById('confirm-button');
-    if (previousButton) {
-        previousButton.remove();
+    // Supprimer le bouton précédent
+    const previousConfirmButton = document.getElementById('confirm-button');
+    if (previousConfirmButton) {
+        previousConfirmButton.remove();
     }
 
     const confirmButton = document.createElement('button');
@@ -85,6 +85,7 @@ function displayDateTimeInput() {
         const dateTimeValue = userInput.value;
         userInput.type = 'text';
         nextStep(dateTimeValue);
+        confirmButton.remove(); // Supprimer le bouton après utilisation
     };
     const chatbotInput = document.getElementById('chatbot-input');
     chatbotInput.appendChild(confirmButton);
@@ -132,7 +133,7 @@ function displayAddressSuggestions(suggestions) {
             const userInput = document.getElementById('user-input');
             userInput.value = suggestion;
             nextStep(suggestion);
-            suggestionsContainer.style.display = 'none'; // Masquer les suggestions après clic
+            suggestionsContainer.remove(); // Supprimer les suggestions après sélection
         };
         suggestionsContainer.appendChild(suggestionElement);
     });
@@ -191,7 +192,7 @@ function nextStep(userResponse) {
                 const [date_arrivee_retour, heure_arrivee_retour] = userResponse.split('T');
                 formData.date_arrivee_retour = date_arrivee_retour;
                 formData.heure_arrivee_retour = heure_arrivee_retour;
-                formData.adresse_arrivee_retour = "Adresse à définir"; // Ajuster si nécessaire
+                formData.adresse_arrivee_retour = userResponse;
                 break;
         }
     }
@@ -244,6 +245,7 @@ function sendFormData() {
         displayMessage('Une erreur s\'est produite.');
     });
 }
+
 // Initialisation du chatbot
 window.onload = function() {
     displayMessage('Bonjour !');
